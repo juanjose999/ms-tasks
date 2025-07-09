@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      server:
+        webflux:
+          routes:
+            - id: user-service
+              uri: lb://ms-users
+              predicates:
+                - Path=/users/**
+
+            - id: task-service
+              uri: lb://ms-tasks
+              predicates:
+                - Path=/tasks/**
+eureka:
+  client:
+    fetch-registry: true
