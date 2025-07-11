@@ -18,5 +18,5 @@ public class Task {
     public Integer id;
     public String title;
     public String content;
-    public Integer id_user;
+    public String id_user;
 }

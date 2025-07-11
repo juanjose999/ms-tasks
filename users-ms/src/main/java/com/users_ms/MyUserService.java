@@ -22,17 +22,23 @@ public class MyUserService {
         return myUserRepository.save(myUser);
     }
 
-    public Collection<?> saveTask(TaskRequestDto taskRequestDto){
-        MyUser findUser = findByEmail(taskRequestDto.emailUser());
-        TaskResponseDto response = new TaskResponseDto(taskRequestDto.title(),taskRequestDto.content(),findUser.getId());
-        TaskResponseDto resultCalloutToMSTask = conectionToMSTask.createTask(response);
-        return Collections.singleton(Map.of("User", findUser, "task", resultCalloutToMSTask));
-    }
-
     public Collection<?> findAllTasksByUser(String emailUser){
         MyUser findUser = findByEmail(emailUser);
-        List<TaskResponseDto> result = conectionToMSTask.getAllTasksByIdUser(findUser.getId());
-        return Collections.singleton(Map.of("User", findUser, "tasks", result));
+        List<TaskResponseDto> findTasksInExternalService = conectionToMSTask.getAllTasksByIdUser(findUser.getId());
+        return Collections.singleton(Map.of("User", findUser.getUsername(), "tasks", findTasksInExternalService.isEmpty() ? "No has creado tareas." : findTasksInExternalService));
+    }
+
+    public TaskResponseDto findTaskByIdAndIdUser(String emailUser, Integer idTask){
+        MyUser findUser = findByEmail(emailUser);
+        return conectionToMSTask.getTaskByIdAndIdUser(findUser.getId(), idTask);
+    }
+
+    public Collection<?> saveTask(TaskRequestDto taskRequestDto){
+        MyUser findUser = findByEmail(taskRequestDto.emailUser());
+        TaskResponseDto requestBody = new TaskResponseDto(taskRequestDto.title(),taskRequestDto.content(),findUser.getId());
+        TaskResponseDto saveInExternalService = conectionToMSTask.createTask(requestBody);
+        if(saveInExternalService==null) throw new RuntimeException("No se puede guardar la tarea.");
+        return Collections.singleton(Map.of("User", findUser, "task", saveInExternalService));
     }
 
     public MyUser findByEmail(String email){

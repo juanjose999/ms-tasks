@@ -11,8 +11,8 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Integer> {
     @Query("SELECT t FROM Task t WHERE t.id_user = :id")
-    List<Task> findById_user(@Param("id") Integer id);
+    List<Task> findById_user(@Param("id") String id);
 
-    @Query("SELECT t FROM Task t WHERE t.id_user = :id")
-    Optional<Task> findTaskByIdUser(@Param("id") Integer id);
+    @Query("SELECT t FROM Task t WHERE t.id_user = :idUser AND t.id = :idTask")
+    Optional<Task> findTaskByIdUser(@Param("idUser") String idUser, @Param("idTask") Integer idTask);
 }

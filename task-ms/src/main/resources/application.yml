@@ -2,9 +2,9 @@ spring:
   application:
     name: ms-tasks
   datasource:
-    url: jdbc:mysql://localhost:3306/tasks
-    username: root
-    password: root
+    url: jdbc:mysql:${URI_DB_MS_TASKS}
+    username: ${USERNAME_DB_MS_TASKS}
+    password: ${PASSWORD_DB_MS_TASKS}
   jpa:
     hibernate:
       ddl-auto: update

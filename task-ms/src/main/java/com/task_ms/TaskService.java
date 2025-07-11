@@ -17,23 +17,23 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public Task findTaskByIdUser(Integer idUser){
-        return taskRepository.findTaskByIdUser(idUser).orElseThrow(() -> new RuntimeException("No se encontraron registros"));
+    public Task findTaskByIdAndIdUser(String idUser, Integer idTask) {
+        return taskRepository.findTaskByIdUser(idUser, idTask).orElseThrow(() -> new RuntimeException("No se encontraron registros"));
     }
 
-    public List<Task> findAllByIdUser(Integer idUser) {
+    public List<Task> findAllByIdUser(String idUser) {
         return taskRepository.findById_user(idUser);
     }
 
-    public Task update(Task task, Integer idUser) {
-        Task oldTask = findTaskByIdUser(idUser);
+    public Task update(Integer idTask, String idUser, Task task) {
+        Task oldTask = findTaskByIdAndIdUser(idUser, idTask);
         oldTask.setTitle(task.getTitle());
         oldTask.setContent(task.getContent());
         return taskRepository.save(oldTask);
     }
 
-    public boolean deleteTaskByIdTaskAndIdUser(Integer idTask, Integer idUser) {
-        Task task = findTaskByIdUser(idUser);
+    public boolean deleteTaskByIdTaskAndIdUser(Integer idTask, String idUser) {
+        Task task = findTaskByIdAndIdUser(idUser, idTask);
         if(task != null){
             taskRepository.delete(task);
             return true;

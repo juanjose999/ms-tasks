@@ -1,12 +1,10 @@
 spring:
+  data:
+    mongodb:
+      uri: ${URI_DB_MONGO}
+
   application:
     name: ms-users
-  datasource:
-    url: jdbc:mysql://localhost:3306/users_tasks
-    username: root
-    password: root
-  jpa:
-    hibernate:
-      ddl-auto: update
+
 server:
   port: 8081

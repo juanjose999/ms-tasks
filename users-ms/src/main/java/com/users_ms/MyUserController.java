@@ -15,20 +15,26 @@ public class MyUserController {
         this.myUserService = myUserService;
     }
 
+    @PostMapping("/tasks")
+    public ResponseEntity<?> saveTask(@RequestBody TaskRequestDto taskRequestDto) {
+        return ResponseEntity.ok(myUserService.saveTask(taskRequestDto));
+    }
+
+    @GetMapping("/all-tasks")
+    public ResponseEntity<?> getTasks(@PathVariable String emailUser) {
+        return ResponseEntity.ok(myUserService.findAllTasksByUser(emailUser));
+    }
+
+    @GetMapping("{emailUser}/task-id/{idTask}")
+    public ResponseEntity<?> getTaskByIdAndIdUser(@PathVariable String emailUser, @PathVariable Integer idTask) {
+        return ResponseEntity.ok(myUserService.findTaskByIdAndIdUser(emailUser, idTask));
+    }
+
     @PostMapping
     public ResponseEntity<MyUser> saveUser(@RequestBody MyUser myUser) {
         return ResponseEntity.ok(myUserService.save(myUser));
     }
 
-    @PostMapping("/{emailUser}")
-    public ResponseEntity<?> saveTask(@RequestBody TaskRequestDto taskRequestDto) {
-        return ResponseEntity.ok(myUserService.saveTask(taskRequestDto));
-    }
-
-    @GetMapping("/{emailUser}")
-    public ResponseEntity<?> getTasks(@PathVariable String emailUser) {
-        return ResponseEntity.ok(myUserService.findAllTasksByUser(emailUser));
-    }
 
     @GetMapping
     public ResponseEntity<List<MyUser>> getAllUsers() {

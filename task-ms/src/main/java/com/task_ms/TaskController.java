@@ -20,18 +20,22 @@ public class TaskController {
     }
 
     @GetMapping("/allByIdUser/{idUser}")
-    public ResponseEntity<?> getAllTasksByIdUser(@PathVariable Integer idUser) {
+    public ResponseEntity<?> getAllTasksByIdUser(@PathVariable String idUser) {
         return ResponseEntity.ok(taskService.findAllByIdUser(idUser));
     }
 
-    @GetMapping("/idUser/{idUser}")
-    public ResponseEntity<?> getTaskByIdUser(@PathVariable Integer idUser) {
-        return ResponseEntity.ok(taskService.findTaskByIdUser(idUser));
+    @GetMapping("{idTask}/idUser/{idUser}")
+    public ResponseEntity<?> getTaskByIdAndIdUser(@PathVariable String idUser, @PathVariable Integer idTask) {
+        return ResponseEntity.ok(taskService.findTaskByIdAndIdUser(idUser, idTask));
     }
 
-    @PutMapping("/idUser/{idUser}")
-    public ResponseEntity<?> updateTaskByIdUser(@PathVariable Integer idUser, @RequestBody Task task) {
-        return ResponseEntity.ok(taskService.update(task, idUser));
+    @PutMapping("{idTask}/idUser/{idUser}")
+    public ResponseEntity<?> updateTaskByIdUser(@PathVariable String idUser, @PathVariable Integer idTask ,@RequestBody Task task) {
+        return ResponseEntity.ok(taskService.update(idTask, idUser, task));
     }
 
+    @DeleteMapping("{idTask}/idUser/{idUser}")
+    public ResponseEntity<?> deleteTaskByIdUser(@PathVariable Integer idTask, @PathVariable String idUser) {
+        return taskService.deleteTaskByIdTaskAndIdUser(idTask,idUser) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
 }

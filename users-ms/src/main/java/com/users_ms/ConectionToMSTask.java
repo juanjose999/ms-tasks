@@ -13,7 +13,10 @@ import java.util.List;
 public interface ConectionToMSTask {
 
     @GetMapping("/tasks/allByIdUser/{idUser}")
-    List<TaskResponseDto> getAllTasksByIdUser(@PathVariable ("idUser") Integer idUser);
+    List<TaskResponseDto> getAllTasksByIdUser(@PathVariable ("idUser") String idUser);
+
+    @GetMapping("/tasks/{idTask}/idUser/{idUser}")
+    TaskResponseDto getTaskByIdAndIdUser(@PathVariable ("idUser") String idUser, @PathVariable("idTask") Integer idTask);
 
     @PostMapping("/tasks")
     TaskResponseDto createTask(@RequestBody TaskResponseDto responseDto);

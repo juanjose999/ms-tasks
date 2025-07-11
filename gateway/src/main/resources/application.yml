@@ -18,10 +18,6 @@ spring:
               predicates:
                 - Path=/users/**
 
-            - id: task-service
-              uri: lb://ms-tasks
-              predicates:
-                - Path=/tasks/**
 eureka:
   client:
     fetch-registry: true
