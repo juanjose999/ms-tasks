@@ -1,4 +1,4 @@
-package com.users_ms;
+package com.users_ms.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
