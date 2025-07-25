@@ -12,10 +12,11 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MyUser {
+public class MyUser extends Auditable {
     @MongoId
     private String id;
     private String username;
     private String password;
     private String email;
+
 }

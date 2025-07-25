@@ -1,17 +1,19 @@
 package com.task_ms.repository;
 
 import com.task_ms.entity.Task;
+import com.task_ms.exception.TaskException;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+@Repository
+public class TaskRepository implements ITaskRepository {
 
-public class TaskRepository {
+    private final ITaskRepositoryJPA taskRepository;
 
-    private final ITaskRepository taskRepository;
-
-    public TaskRepository(ITaskRepository taskRepository) {
+    public TaskRepository(ITaskRepositoryJPA taskRepository) {
         this.taskRepository = taskRepository;
     }
 
@@ -27,15 +29,15 @@ public class TaskRepository {
         return taskRepository.findTaskByIdTaskAndIdUser(idUser, idTask);
     }
 
-    public Task update(Integer idTask, String idUser, Task taskToUpdate){
-        Task findTask = taskRepository.findTaskByIdTaskAndIdUser(idUser,idTask).orElseThrow(()->new RuntimeException("No se encontro la tarea."));
+    public Task update(Integer idTask, String idUser, Task taskToUpdate) throws TaskException {
+        Task findTask = taskRepository.findTaskByIdTaskAndIdUser(idUser,idTask).orElseThrow(()->new TaskException("No se encontro la tarea."));
         findTask.setTitle(taskToUpdate.getTitle());
         findTask.setContent(taskToUpdate.getContent());
         return taskRepository.save(findTask);
     }
 
-    public Boolean deleteTaskByIdTaskAndIdUser(Integer idTask, String idUser){
-        Task findTask = taskRepository.findTaskByIdTaskAndIdUser(idUser,idTask).orElseThrow(()->new RuntimeException("No se encontro la tarea."));
+    public Boolean deleteTaskByIdTaskAndIdUser(Integer idTask, String idUser) throws TaskException {
+        Task findTask = taskRepository.findTaskByIdTaskAndIdUser(idUser,idTask).orElseThrow(()->new TaskException("No se encontro la tarea."));
         if(findTask.getId().equals(idTask)){
             taskRepository.delete(findTask);
             return true;

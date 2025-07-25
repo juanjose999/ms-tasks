@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tasks")
-public class Task {
+public class Task extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;

@@ -1,5 +1,8 @@
 package com.users_ms.service;
 
+import com.users_ms.dto.MyUserMapper;
+import com.users_ms.dto.MyUserResponseDto;
+import com.users_ms.exception.MyUserException;
 import com.users_ms.integration.ConectionToMSTask;
 import com.users_ms.dto.TaskRequestDto;
 import com.users_ms.dto.TaskResponseDto;
@@ -20,54 +23,57 @@ public class MyUserService implements IMyUserService {
         this.conectionToMSTask = conectionToMSTask;
     }
 
-    public MyUser saveUser(MyUser myUser){
-        return myUserRepository.saveUser(myUser);
+    public MyUserResponseDto saveUser(MyUser myUser){
+        return MyUserMapper.entityToResponseDto( myUserRepository.save(myUser));
     }
 
-    public Collection<?> saveTask(TaskRequestDto taskRequestDto){
-        MyUser findUser = findUserByEmail(taskRequestDto.emailUser());
-        TaskResponseDto taskRequestBody = new TaskResponseDto(taskRequestDto.title(),taskRequestDto.content(),findUser.getId());
+    public Collection<?> saveTask(TaskRequestDto taskRequestDto) throws MyUserException {
+        Optional<MyUser> findUser = myUserRepository.findById(taskRequestDto.id_user());
+        TaskRequestDto taskRequestBody = new TaskRequestDto(taskRequestDto.title(),taskRequestDto.content(),findUser.get().getId());
         TaskResponseDto saveInTaskService = conectionToMSTask.saveTask(taskRequestBody);
-        if(saveInTaskService == null) throw new RuntimeException("No se pudo guardar la tarea.");
+        if(saveInTaskService == null) throw new MyUserException("No se pudo guardar la tarea.");
         return Collections.singleton(Map.of("task", saveInTaskService));
     }
 
-    public Collection<?> findAllTasksByEmailUser(String emailUser){
-        final MyUser findUser = findUserByEmail(emailUser);
-        final List<TaskResponseDto> findTasksInExternalService = conectionToMSTask.getAllTasksByIdUser(findUser.getId());
-        return Collections.singleton(Map.of("User", findUser.getUsername(), "tasks", findTasksInExternalService.isEmpty() ? "No has creado tareas." : findTasksInExternalService));
+    public Optional<MyUser> findUserById(String id) throws MyUserException {
+        return myUserRepository.findById(id);
     }
 
-    public TaskResponseDto findTaskByIdTaskAndEmailUser(String emailUser, Integer idTask){
-        final MyUser findUser = findUserByEmail(emailUser);
+    public Collection<?> findAllTasksByEmailUser(String emailUser) throws MyUserException {
+        final Optional<MyUser> findUser = myUserRepository.findByEmail(emailUser);
+        final List<TaskResponseDto> findTasksInExternalService = conectionToMSTask.getAllTasksByIdUser(findUser.get().getId());
+        return Collections.singleton(Map.of("User", findUser.get().getUsername(), "tasks", findTasksInExternalService.isEmpty() ? "No has creado tareas." : findTasksInExternalService));
+    }
+
+    public TaskResponseDto findTaskByIdTaskAndEmailUser(String emailUser, Integer idTask) throws MyUserException {
+        final MyUser findUser = myUserRepository.findById(emailUser).get();
         return conectionToMSTask.getTaskByIdTaskAndIdUser(findUser.getId(), idTask).orElseThrow(() -> new RuntimeException("No encontro la tarea."));
     }
 
 
-    public MyUser findUserByEmail(String email){
+    public MyUserResponseDto findUserByEmail(String email) throws MyUserException {
         Optional<MyUser> findUser =  myUserRepository.findByEmail(email);
-        if(findUser.isPresent()) return findUser.get();
-        throw new RuntimeException("No se pudo encontrar el usuario.");
+        if(findUser.isPresent()) return MyUserMapper.entityToResponseDto(findUser.get());
+        throw new MyUserException("No se pudo encontrar el usuario.");
     }
 
-    public MyUser updateUser(MyUser userNewData, String email){
-        return myUserRepository.updateUserByEmail(userNewData, email);
+    public MyUserResponseDto updateUser(MyUser userNewData, String email) throws MyUserException {
+        return MyUserMapper.entityToResponseDto(myUserRepository.updateUserByEmail(userNewData, email));
     }
 
-    public TaskResponseDto updateTaskByIdAndEmailUser(Integer idTask,TaskRequestDto taskRequestDto, String emailUser){
-        MyUser findUser = findUserByEmail(emailUser);
-        TaskRequestDto request = new TaskRequestDto(taskRequestDto.title(),taskRequestDto.content(),findUser.getId());
-        TaskResponseDto response = conectionToMSTask.updateTaskByIdTaskAndIdUser(findUser.getId(), idTask, taskRequestDto);
-        return response;
+    public TaskResponseDto updateTaskByIdAndEmailUser(Integer idTask,TaskRequestDto taskRequestDto, String emailUser) throws MyUserException {
+        Optional<MyUser> findUser = myUserRepository.findByEmail(emailUser);
+        TaskRequestDto request = new TaskRequestDto(taskRequestDto.title(),taskRequestDto.content(),findUser.get().getId());
+        return conectionToMSTask.updateTaskByIdTaskAndIdUser(findUser.get().getId(), idTask, taskRequestDto);
     }
 
-    public Boolean deleteUserByEmail(String email){
+    public Boolean deleteUserByEmail(String email) throws MyUserException {
         return myUserRepository.deleteUserByEmail(email);
     }
 
-    public Boolean deleteTaskByIdTaskAndEmailUser(Integer idTask, String emailUser){
-        MyUser findUser = findUserByEmail(emailUser);
-        return conectionToMSTask.deleteTaskByTaskAndIdUser(findUser.getId(), idTask);
+    public Boolean deleteTaskByIdTaskAndEmailUser(Integer idTask, String emailUser) throws MyUserException {
+        Optional<MyUser> findUser = myUserRepository.findByEmail(emailUser);
+        return conectionToMSTask.deleteTaskByTaskAndIdUser(findUser.get().getId(), idTask);
     }
 
 }

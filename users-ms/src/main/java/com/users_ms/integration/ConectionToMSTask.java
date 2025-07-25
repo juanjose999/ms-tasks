@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface ConectionToMSTask {
 
     @PostMapping("/tasks")
-    TaskResponseDto saveTask(@RequestBody TaskResponseDto responseDto);
+    TaskResponseDto saveTask(@RequestBody TaskRequestDto responseDto);
 
     @GetMapping("/tasks/allByIdUser/{idUser}")
     List<TaskResponseDto> getAllTasksByIdUser(@PathVariable ("idUser") String idUser);

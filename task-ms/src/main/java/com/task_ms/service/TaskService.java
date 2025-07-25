@@ -1,6 +1,7 @@
 package com.task_ms.service;
 
 import com.task_ms.entity.Task;
+import com.task_ms.exception.TaskException;
 import com.task_ms.repository.ITaskRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,9 @@ public class TaskService implements ITaskService{
     }
 
     public Task saveTask(Task task){
-        return taskRepository.save(task);
+        Task t = taskRepository.saveTask(task);
+        System.out.println(t.getCreated());
+        return t;
     }
     public List<Task> findAllTaskByIdUser(@Param("id") String id){
         return taskRepository.findAllTaskByIdUser(id);
@@ -26,10 +29,10 @@ public class TaskService implements ITaskService{
     public Optional<Task> findTaskByIdTaskAndIdUser(String idUser,  Integer idTask){
         return taskRepository.findTaskByIdTaskAndIdUser(idUser, idTask);
     }
-    public Task update(Integer idTask, String idUser, Task taskToUpdate){
+    public Task update(Integer idTask, String idUser, Task taskToUpdate) throws TaskException {
         return taskRepository.update(idTask, idUser, taskToUpdate);
     }
-    public Boolean deleteTaskByIdTaskAndIdUser(Integer idTask, String idUser){
+    public Boolean deleteTaskByIdTaskAndIdUser(Integer idTask, String idUser) throws TaskException {
         return taskRepository.deleteTaskByIdTaskAndIdUser(idTask, idUser);
     }
 
